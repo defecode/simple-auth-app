@@ -2,7 +2,9 @@
 simple implementation auth0
 
 > Containing 2 services : frontend and backend
+
 > frontend contains dashboard and some features related user
+
 > backend provides services that support features on frontend
 
 Technology stacks :
