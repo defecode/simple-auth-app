@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+    <title>Simple App</title>
+
+    <!-- Required Stylesheets -->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"
+    />
+
+    <!-- Load polyfills to support older browsers -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
+
+    <!-- Required scripts -->
+    <script src="https://unpkg.com/vue@2.6.12/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+    <style>
+      [v-cloak] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <% if(!isAuthenticated) {%>
+      <div class="mx-auto" style="text-align: center; margin-top: 20%">
+        <b-alert variant="success" :show="true">
+          <h4 class="alert-heading">Login</h4>
+          <p>Please wait ... you will be redirect to Signin/Signup page.</p>
+          <p class="mb-0">
+            click <a href="<%=baseUrl %>/login">here</a> if you are not
+            automatically redirected.
+          </p>
+        </b-alert>
+      </div>
+      <% }else if(isAuthenticated && !isEmailVerified){%>
+
+      <div class="mx-auto" style="text-align: center; margin-top: 20%">
+        <b-alert variant="success" :show="verificationEmailStatusSuccess"
+          >Verification email is successfully sent, please check your mailbox
+          and click confirmation url.</b-alert
+        >
+        <b-alert variant="danger" :show="verificationEmailStatusError"
+          >Error occured, please try again.</b-alert
+        >
+        <p>
+          Please verify your email or click below link if you havent received
+          the verification mail. <b>if you already did confirmation, please<b>
+          <b-button variant="link" href="<%=baseUrl %>/logout">logout</b-button>
+          <b>and then login.</b>
+        </p>
+        <b-button variant="link" @click="sendVerificationMail()"
+          >send verification email</b-button
+        >
+      </div>
+      <% }else{%> Hello, {{ name }} ({{ email }}) |<b-button
+        variant="link"
+        href="<%=baseUrl %>/logout"
+        >Logout</b-button
+      >
+      <b-row class="justify-content">
+        <b-col cols="4" md="auto">
+          <div>
+            <b-button variant="link" v-b-modal.modal-resetname
+              >reset name</b-button
+            >
+            <b-modal id="modal-resetname" title="Update Your Name" @ok="resetName">
+              <b-alert variant="success" :show="updateNameStatusSuccess"
+              >Your name has been updated, you may close this form.</b-alert
+            >
+            <b-alert variant="danger" :show="updateNameStatusError"
+              >Error occured, please try again. Please make sure your inputs are valid.</b-alert
+            >
+              <p class="my-1">Please set empty if want to reset</p>
+              <b-row class="my-1">
+                <b-form-input
+                  v-model="updatedName"
+                  size="sm"
+                  placeholder="Enter your new name"
+                ></b-form-input
+              ></b-row>
+            </b-modal>
+          </div></b-col
+        >
+        <b-col cols="4" md="auto"
+          ><div>
+            <b-button variant="link" v-b-modal.modal-resetpassword
+              >reset password</b-button
+            >
+            <b-modal
+              id="modal-resetpassword"
+              title="Reset Password"
+              @ok="resetPassword"
+            >
+              <b-alert variant="success" :show="updatePasswordStatusSuccess"
+                >Your email has been updated, you may close this form and
+                logout-login.</b-alert
+              >
+              <b-alert variant="danger" :show="updatePasswordStatusError"
+                >Error occured, please try again. Please make sure your inputs are valid.</b-alert
+              >
+              <b-row class="my-1">
+                <b-form-input
+                  v-model="oldPassword"
+                  type="password"
+                  size="sm"
+                  placeholder="Enter your old password"
+                ></b-form-input
+              ></b-row>
+              <b-row class="my-1"
+                ><b-form-input
+                  v-model="newPassword"
+                  type="password"
+                  size="sm"
+                  placeholder="Enter your new password"
+                ></b-form-input
+              ></b-row>
+              <b-row class="my-1"
+                ><b-form-input
+                  v-model="newPasswordAgain"
+                  type="password"
+                  size="sm"
+                  placeholder="Enter your new password again"
+                ></b-form-input
+              ></b-row>
+            </b-modal></div
+        ></b-col>
+      </b-row>
+
+      <div>
+        <b-card no-body class="overflow-hidden">
+          <b-row no-gutters>
+            <b-col md="4">
+              <b-card-body title="Total number of users who have signed up.">
+                <b-card-text>
+                  <h1>{{ totalNumberSignUp }}</h1>
+                </b-card-text>
+              </b-card-body>
+            </b-col>
+            <b-col md="4">
+              <b-card-body title="Total number of users with active sessions">
+                <b-card-text>
+                  <h1>{{ totalNumberLoggedIn }}</h1>
+                </b-card-text>
+              </b-card-body>
+            </b-col>
+            <b-col md="4">
+              <b-card-body
+                title="Avg number of active session users(last 7 days)"
+              >
+                <b-card-text>
+                  <h1>{{ avgNumberActiveSession7days }}</h1>
+                </b-card-text>
+              </b-card-body>
+            </b-col>
+          </b-row>
+        </b-card>
+      </div>
+
+      <template>
+        <div>
+          <b-table striped hover :items="items"></b-table>
+        </div>
+      </template>
+
+      <% } %>
+    </div>
+    <script>
+      async function advHttpRequest(method, url = "", data = {}) {
+        const response = await fetch(url, {
+          method: method,
+          mode: "cors",
+          cache: "no-cache",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        return response;
+      }
+
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          oldPassword: "",
+          newPassword: "",
+          newPasswordAgain: "",
+          name: "",
+          updatedName:"",
+          email: "",
+          updatePasswordStatusSuccess: false,
+          updatePasswordStatusError: false,
+          updateNameStatusSuccess: false,
+          updateNameStatusError: false,
+          verificationEmailStatusSuccess: false,
+          verificationEmailStatusError: false,
+          totalNumberSignUp: 0,
+          totalNumberLoggedIn: 0,
+          avgNumberActiveSession7days: 0,
+          items: [],
+        },
+        methods: {
+          resetName(bvModalEvent){
+            bvModalEvent.preventDefault();
+            this.updateNameStatusSuccess = false;
+            this.updateNameStatusError = false;
+            advHttpRequest("POST", "<%=baseUrl %>/call/update-name", {
+              name: this.updatedName
+            }).then((resp) => {
+              vm.updatedName="";
+              vm.updateNameStatusSuccess = resp.status == 200;
+              vm.updateNameStatusError = resp.status != 200;
+
+              fetch("<%=baseUrl %>/call/get-profile")
+              .then((resp) => resp.json())
+              .then((data) => {
+                vm.name = data.name;
+                vm.email = data.email;
+              });
+              
+            }).catch((err)=>{
+              vm.updateNameStatusError=true;
+            });
+          },
+          resetPassword(bvModalEvent) {
+            bvModalEvent.preventDefault();
+            this.updatePasswordStatusSuccess = false;
+            this.updatePasswordStatusError = false;
+            advHttpRequest("POST", "<%=baseUrl %>/call/update-password", {
+              oldPassword: this.oldPassword,
+              newPassword: this.newPassword,
+              newPasswordAgain: this.newPasswordAgain
+            }).then((resp) => {
+              vm.updatePasswordStatusSuccess = resp.status == 200;
+              vm.updatePasswordStatusError = resp.status != 200;
+              vm.oldPassword= "";
+              vm.newPassword= "";
+              vm.newPasswordAgain=""; 
+            }).catch((err)=>{
+              vm.updatePasswordStatusError=true;
+            });
+          },
+          sendVerificationMail() {
+            this.verificationEmailStatusSuccess = false;
+            this.verificationEmailStatusError = false;
+            fetch("<%=baseUrl %>/call/send-verification-email").then((resp) => {
+              vm.verificationEmailStatusSuccess = resp.status == 200;
+              vm.verificationEmailStatusError = resp.status != 200;
+            });
+          },
+          getData() {
+            fetch("<%=baseUrl %>/call/get-list-users")
+              .then((resp) => resp.json())
+              .then((data) => {
+                vm.items = data;
+              });
+            fetch("<%=baseUrl %>/call/get-statistics")
+              .then((resp) => resp.json())
+              .then((data) => {
+                vm.totalNumberSignUp = data.totalSignup;
+                vm.totalNumberLoggedIn = data.activeSession;
+                vm.avgNumberActiveSession7days = data.activeSessionLast7Days;
+              });
+            fetch("<%=baseUrl %>/call/get-profile")
+              .then((resp) => resp.json())
+              .then((data) => {
+                vm.name = data.name;
+                vm.email = data.email;
+              });
+          },
+        },
+        created() {
+          this.getData();
+        },
+      });
+    </script>
+  </body>
+</html>
+<% if(!isAuthenticated) {%>
+<script>
+  self.location.href = "<%=baseUrl %>/login";
+</script>
+<% }%>
