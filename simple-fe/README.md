@@ -28,3 +28,9 @@ or
 ```sh
 npm run local
 ```
+
+> access via browser
+
+```sh
+http://localhost:3000
+```
