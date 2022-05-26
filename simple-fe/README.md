@@ -1,4 +1,4 @@
-# simple-auth-app
+# simple-fe
 simple implementation frontend
 
 

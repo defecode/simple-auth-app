@@ -3,9 +3,9 @@ simple implementation auth0
 
 > Containing 2 services : frontend and backend
 
-> frontend contains dashboard and some features related user
+> [frontend] contains dashboard and some features related user
 
-> backend provides services that support features on frontend
+> [backend] provides services that support features on frontend
 
 Technology stacks :
 
@@ -20,6 +20,7 @@ Technology stacks :
 [NodeJS]: <https://nodejs.org>
 [Express]: <https://expressjs.com>
 [BootstrapVue]: <https://bootstrap-vue.org/>
-
+[frontend]: <https://github.com/defecode/simple-auth-app/tree/main/simple-fe>
+[backend]: <https://github.com/defecode/simple-auth-app/tree/main/simple-app>
 ## Installation
 > Go to each folder for the detail.
